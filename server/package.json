@@ -1,0 +1,31 @@
+{
+  "name": "vue-api",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon app.js",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "jest": "^30.0.5",
+    "supertest": "^7.1.4"
+  },
+  "type": "module",
+  "dependencies": {
+    "connect-ensure-login": "^0.1.1",
+    "connect-redis": "^9.0.0",
+    "cookie-parser": "^1.4.7",
+    "dotenv": "^17.2.1",
+    "express": "^5.1.0",
+    "express-session": "^1.18.2",
+    "http-errors": "^2.0.0",
+    "morgan": "^1.10.1",
+    "passport": "^0.7.0",
+    "passport-local": "^1.0.0",
+    "redis": "^5.8.0",
+    "sqlite3": "^5.1.7"
+  }
+}
