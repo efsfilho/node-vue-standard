@@ -1,10 +1,13 @@
-import sqlite3 from 'sqlite3'
-import mkdirp from 'mkdirp'
+import { mkdirSync } from 'node:fs'
 import crypto from'node:crypto'
+import sqlite3 from 'sqlite3'
 
-mkdirp.sync('./var/db');
+mkdirSync('./var/db', { recursive: true }, (err) => {
+  if (err)
+    throw err
+})
 
-const db = new sqlite3.Database('./var/db/todos.db');
+const db = new sqlite3.Database('./var/db/todos.db')
 
 db.serialize(() => {
   // create the database schema for the todos app
@@ -13,14 +16,14 @@ db.serialize(() => {
     username TEXT UNIQUE, \
     hashed_password BLOB, \
     salt BLOB \
-  )");
+  )")
   
   db.run("CREATE TABLE IF NOT EXISTS todos ( \
     id INTEGER PRIMARY KEY, \
     owner_id INTEGER NOT NULL, \
     title TEXT NOT NULL, \
     completed INTEGER \
-  )");
+  )")
   
   // create an initial user (username: alice, password: letmein)
   var salt = crypto.randomBytes(16);
@@ -28,8 +31,8 @@ db.serialize(() => {
     'alice',
     crypto.pbkdf2Sync('letmein', salt, 310000, 32, 'sha256'),
     salt
-  ]);
-});
+  ])
+})
 
-// module.exports = db;
-export default db;
+
+export default db

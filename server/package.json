@@ -1,9 +1,9 @@
 {
   "name": "vue-api",
   "version": "0.0.1",
-  "main": "index.js",
+  "main": "./src/app.js",
   "scripts": {
-    "dev": "nodemon app.js",
+    "dev": "nodemon ./src/app.js",
     "test": "jest"
   },
   "author": "",
