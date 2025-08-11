@@ -8,4 +8,8 @@ export const config = {
   redisStore: {
     prefix: process.env.REDIS_STORE_PREFIX || 'node-vue-app'
   },
+  redisClient: {
+    // url: "redis://alice:foobared@awesome.redis.server:6380",
+    url: process.env.REDIS_URL,
+  }
 }

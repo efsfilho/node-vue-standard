@@ -4,29 +4,30 @@ import { fileURLToPath } from 'node:url'
 import logger from 'morgan'
 import express from 'express'
 import session from 'express-session'
-import cookieParser from 'cookie-parser'
+// import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import { ensureLoggedIn } from 'connect-ensure-login'
 import redisStore from './utils/store_redis.js'
 import { config, } from './config/server.js'
+import compression from 'compression'
+
+const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const app = express()
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-app.use(cookieParser())
-
-const __dirname = dirname(fileURLToPath(import.meta.url))
+// app.use(cookieParser())
 app.use(express.static(join(__dirname, 'public')))
 
 app.use(session({
-  secret: 'keyboard cat',
+  secret: config.session.secret,
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   store: redisStore,
 }))
-
 app.use(passport.authenticate('session'))
+app.use(compression())
 
 app.use((req, res, next) => {
   // Used by passport.authenticate
