@@ -7,29 +7,17 @@ import session from 'express-session'
 import cookieParser from 'cookie-parser'
 import passport from 'passport'
 import { ensureLoggedIn } from 'connect-ensure-login'
-import { createClient } from 'redis'
-import { RedisStore } from 'connect-redis'
-// import compression from 'compression'
+import redisStore from './utils/store_redis.js'
+import { config, } from './config/server.js'
 
 const app = express()
-
 app.use(logger('dev'))
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 app.use(cookieParser())
-// app.use(compression())
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 app.use(express.static(join(__dirname, 'public')))
-
-// Initialize client.
-let redisClient = createClient()
-redisClient.connect().catch(console.error)
-// Initialize store.
-let redisStore = new RedisStore({
-  client: redisClient,
-  prefix: "myapp:",
-})
 
 app.use(session({
   secret: 'keyboard cat',
@@ -49,27 +37,32 @@ app.use((req, res, next) => {
   next()
 })
 
-
-// var indexRouter = require('./routes/index')
-// var testRouter = require('./routes/csrf_check')
-// const authRouter = require('./routes/auth')
-
-// app.use('/',  import('./routes/auth'))
-// import authRoutes from './modules/auth/auth.js'
 import authRoutes from './modules/auth/index.js'
 app.use('/',  authRoutes)
-// import rr from './routes/r.js'
-// app.use('/',  rr)
 
 app.get('/list', async(req, res, next) => {
-  // redisStore.all()
-  // console.log('alll', redisStore.all() )
   res.json({ message: await redisStore.all() })
+})
+
+app.get('/admin', (req, res) => {
+  const { role } = req.user;
+  
+  if (role) {
+    return res.status(401)
+  }
+
+  if (role !== 'admin') {
+    return res.status(403)
+  }
+  res.json({ message: 'admin autenticado'})
+});
+
+app.get('/', ensureLoggedIn(), async(req, res, next) => {
+  res.json({ message: 'await redisStore.all()' })
 })
 
 app.get('/clear', async(req, res, next) => {
   const l = (await redisStore.all()).length
-  // console.log('length', l.length)
   redisStore.clear()
   res.json({ message: l })
 })
@@ -90,5 +83,5 @@ app.use((err, req, res, next) => {
   res.json({ error: err })
 })
 
-app.listen(3000, () => console.log('Server running on http://localhost:3000/'))
+app.listen(config.port, () => console.log(`Server running on port ${config.port}`))
 

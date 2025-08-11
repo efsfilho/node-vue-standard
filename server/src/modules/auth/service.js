@@ -1,7 +1,14 @@
 import crypto from 'node:crypto'
 import passport from 'passport'
 import LocalStrategy from 'passport-local'
-import db from '../../config/db.js'
+import db from '../../utils/db_sqlite.js'
+
+const SALTSIZE = 16
+const PBKDF2 = {
+  iterations: 310000,
+  keylen: 32,
+  digest: 'sha256',
+}
 
 const verify = (username, password, cb) => {
   const dbCb = async (err, row) => {
@@ -15,7 +22,13 @@ const verify = (username, password, cb) => {
       })
     }
     
-    let hashedPass = crypto.pbkdf2Sync(password, row.salt, 310000, 32, 'sha256')
+    let hashedPass = crypto.pbkdf2Sync(
+      password,
+      row.salt,
+      PBKDF2.iterations,
+      PBKDF2.keylen,
+      PBKDF2.digest
+    )
     if (!crypto.timingSafeEqual(row.hashed_password, hashedPass)) {
       return cb(null, false, {
         message: 'Incorrect username or password.'
@@ -24,7 +37,7 @@ const verify = (username, password, cb) => {
 
     return cb(null, row)
   }
-
+  
   const qry = `
     SELECT * FROM users
     WHERE username = ?;
@@ -51,9 +64,15 @@ export const passportAuthenticate = passport.authenticate('local', {
 })
 
 export const saveUser = async (username, password) => {
-  const salt = crypto.randomBytes(16)
+  const salt = crypto.randomBytes(SALTSIZE)
   let savedUser = {}
-  let hashedPassword = crypto.pbkdf2Sync(password, salt, 310000, 32, 'sha256')
+  let hashedPassword = crypto.pbkdf2Sync(
+    password,
+    salt,
+    PBKDF2.iterations,
+    PBKDF2.keylen,
+    PBKDF2.digest
+  )
 
   const qry = `
     INSERT INTO users (
@@ -85,7 +104,6 @@ export const saveUser = async (username, password) => {
         resolve()
       }
     }
-    
     db.run(qry, params, cb)
   })
 
