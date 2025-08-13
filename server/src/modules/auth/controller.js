@@ -1,3 +1,4 @@
+import logger from '../../utils/logger.js'
 import { passportAuthenticate, saveUser } from './service.js'
 
 export const getLogin = (req, res, next) => {
@@ -5,38 +6,22 @@ export const getLogin = (req, res, next) => {
 }
 
 const login = (req, res, next) => {
-  res.format({
-    'text/html': () => {
-      res.redirect('/')
-    },
-    'application/json': () => {
-      res.json({
-        ok: true,
-        location: '/'
-      })
-    }
-  })
+  res.status(200).json()
 }
 
 const loginError = (err, req, res, next) => {
-  console.log('loginerror ', req.session.messages)
-  if (err.status !== 401) {
-    return next(err)
+  if (err && err.status === 401 && err.message === 'Unauthorized') {
+    logger.debug('loginError:', req.user)
+    res.status(401).json({
+      title: 'Authentication failed',
+      detail: 'Incorrect username or password'
+    });
+  } else {
+    next(err)
   }
-  res.format({
-    // 'text/html': function() {
-    //   res.redirect('/login');
-    // },
-    'application/json': () => {
-      res.json({
-        ok: false,
-        location: '/login'
-      })
-    }
-  })
 }
 
-export const postLogin = [ passportAuthenticate, login, loginError ]
+export const postLogin = [ passportAuthenticate, login, loginError]
 
 export const postLogOut = (req, res, next) => {
   req.logout(function(err) {
@@ -54,7 +39,7 @@ export const getSignUp = (req, res, next) => {
 export const postSignUp = async (req, res, next) => {
   const { username, password } = req.body
   try {
-    let user = await saveUser(username, password)
+    const user = await saveUser(username, password)
     req.login(user, (err) => {
       if (err) {
         return next(err)
@@ -62,8 +47,9 @@ export const postSignUp = async (req, res, next) => {
       res.redirect('/')
     });
   } catch (err) {
-    console.log(err)
-    return next(err)
+    logger.debug('signupError')
+    logger.debug('username:' , username)
+    next(err)
   }
 }
 

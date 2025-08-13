@@ -24,11 +24,11 @@ describe('POST /login', () => {
         password: 'testasds'
       })
       expect(r.statusCode).toEqual(401);
-      expect(r.body.ok).toEqual(false)
-      expect(r.body.location).toEqual("/login")
+      expect(r.body.title).toEqual('Authentication failed')
+      expect(r.body.detail).toEqual('Incorrect username or password')
   });
 
-  it('responds with 200 (existing user)', async () => {
+  it('responds with 200', async () => {
     const r = await request(app)
       .post('/login')
       .send({
@@ -36,9 +36,9 @@ describe('POST /login', () => {
         password: 'test' 
       })
     try {
-      expect(r.statusCode).toEqual(302);
-      expect(r.redirect).toEqual(true);
-      expect(r.header.location).toEqual("/");
+      expect(r.statusCode).toEqual(200);
+      // expect(r.redirect).toEqual(true);
+      // expect(r.header.location).toEqual("/");
     } catch (err) {
       err.message = err.message+ '\n\nCHECK USER/PASSWORD'
       throw err
@@ -73,9 +73,9 @@ describe('GET /is-authenticated', () => {
         password: 'test'
       })
     try {
-      expect(a.statusCode).toEqual(302);
-      expect(a.redirect).toEqual(true);
-      expect(a.header.location).toEqual("/");
+      expect(a.statusCode).toEqual(200);
+      // expect(a.redirect).toEqual(true);
+      // expect(a.header.location).toEqual("/");
   
       const b = await loggedAgent.get('/is-authenticated')
       expect(b.statusCode).toBe(200)
@@ -102,9 +102,9 @@ describe('Authentication', () => {
         password: 'test'
       })
     try {
-      expect(a.statusCode).toEqual(302);
-      expect(a.redirect).toEqual(true);
-      expect(a.header.location).toEqual("/");
+      expect(a.statusCode).toEqual(200);
+      // expect(a.redirect).toEqual(true);
+      // expect(a.header.location).toEqual("/");
     } catch (err) {
       err.message = err.message+ '\n\nCHECK USER/PASSWORD'
       throw err

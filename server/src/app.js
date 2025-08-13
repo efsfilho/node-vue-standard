@@ -1,23 +1,21 @@
+import { config, } from './config/server.js'
+import logger from './utils/logger.js'
+import morganLogger from './utils/morgan_logger.js'
+import redisStore from './utils/store_redis.js'
 import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
-// import createError from 'http-errors'
-import logger from 'morgan'
 import express from 'express'
 import session from 'express-session'
-// import cookieParser from 'cookie-parser'
 import passport from 'passport'
-import { ensureLoggedIn } from 'connect-ensure-login'
-import redisStore from './utils/store_redis.js'
-import { config, } from './config/server.js'
 import compression from 'compression'
+import { ensureLoggedIn } from 'connect-ensure-login'
 
 const __dirname = dirname(fileURLToPath(import.meta.url))
 
 const app = express()
-app.use(logger('dev'))
+app.use(morganLogger)
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
-// app.use(cookieParser())
 app.use(express.static(join(__dirname, 'public')))
 
 app.use(session({
@@ -76,12 +74,13 @@ app.get('/clear', async(req, res, next) => {
 
 // error handler
 app.use((err, req, res, next) => {
-  // handle CSRF token errors here  
+  logger.error(err)
   if (err.code == 'EBADCSRFTOKEN') {
     res.status(403)
   }
-
-  res.json({ error: err })
+  res.status(500).json({
+    detail: 'Internal Server Error'
+  });
 })
 
 app.listen(config.port, () => console.log(`Server running on port ${config.port}`))

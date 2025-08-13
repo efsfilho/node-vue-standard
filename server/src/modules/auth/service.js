@@ -13,7 +13,7 @@ const PBKDF2 = {
 const verify = (username, password, cb) => {
   const dbCb = async (err, row) => {
     if (err) {
-      return cb(err)
+      return cb(new Error(err))
     }
 
     if (!row) {
@@ -22,7 +22,7 @@ const verify = (username, password, cb) => {
       })
     }
     
-    let hashedPass = crypto.pbkdf2Sync(
+    const hashedPass = crypto.pbkdf2Sync(
       password,
       row.salt,
       PBKDF2.iterations,
@@ -65,15 +65,14 @@ export const passportAuthenticate = passport.authenticate('local', {
 
 export const saveUser = async (username, password) => {
   const salt = crypto.randomBytes(SALTSIZE)
-  let savedUser = {}
-  let hashedPassword = crypto.pbkdf2Sync(
+  const hashedPassword = crypto.pbkdf2Sync(
     password,
     salt,
     PBKDF2.iterations,
     PBKDF2.keylen,
     PBKDF2.digest
   )
-
+  let savedUser = {}
   const qry = `
     INSERT INTO users (
       username,
@@ -95,7 +94,7 @@ export const saveUser = async (username, password) => {
     // Callback must be old-school function
     const cb = function(err) {
       if (err) {
-        reject(err)
+        reject(new Error(err))
       } else {
         savedUser = {
           id: this.lastID,
