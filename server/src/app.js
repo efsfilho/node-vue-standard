@@ -78,6 +78,7 @@ app.use((err, req, res, next) => {
   if (err.code == 'EBADCSRFTOKEN') {
     res.status(403)
   }
+  // https://jsonapi.org/format/#errors
   res.status(500).json({
     detail: 'Internal Server Error'
   });

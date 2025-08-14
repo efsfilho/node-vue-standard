@@ -8,10 +8,43 @@ describe('POST /signup - When a user/password is sent(Must be a new user)', () =
       .post('/signup')
       .send({
         username: 'test',
-        password: 'test' 
+        password: 'test'
       })
     expect(r.statusCode).toEqual(302);
     expect(r.text).toEqual('Found. Redirecting to /');
+  });
+
+  it('responds with 400 (payload check))', async () => {
+    const r = await request(app)
+      .post('/signup')
+      .send({
+        ascxzss: 'test',
+        reywrqw: 'test'
+      })
+    expect(r.statusCode).toEqual(400);
+    expect(r.body.detail).toEqual('Bad Request');
+  });
+
+  it('responds with 400 (user length check)', async () => {
+    const r = await request(app)
+      .post('/signup')
+      .send({
+        username: 'tes', // invalid user length
+        password: 'test'
+      })
+    expect(r.statusCode).toEqual(400);
+    expect(r.body.detail).toEqual('Invalid username. Please try again.');
+  });
+
+  it('responds with 400 (password length check)', async () => {
+    const r = await request(app)
+      .post('/signup')
+      .send({
+        username: 'aaaa',
+        password: 'test'  // invalid password length
+      })
+    expect(r.statusCode).toEqual(400);
+    expect(r.body.detail).toEqual('Password must be longer than 6 characters.');
   });
 });
 
