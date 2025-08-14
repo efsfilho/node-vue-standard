@@ -1,14 +1,17 @@
 const request = require('supertest');
 const app = 'http://localhost:3000'
 
+const TEST_USERNAME = 'tester'
+const TEST_PASSWORD = 'fP44qr'
+
 describe('POST /signup - When a user/password is sent(Must be a new user)', () => {
   // // First, check if the user 'test' already exists
   it.skip('responds with redirect to / after signup', async () => {
     const r = await request(app)
       .post('/signup')
       .send({
-        username: 'test',
-        password: 'test'
+        username: TEST_USERNAME,
+        password: TEST_PASSWORD
       })
     expect(r.statusCode).toEqual(302);
     expect(r.text).toEqual('Found. Redirecting to /');
@@ -53,8 +56,8 @@ describe('POST /login', () => {
     const r = await request(app)
       .post('/login')
       .send({
-        username: 'test',
-        password: 'testasds'
+        username: 'tdfd',
+        password: 'maslfuw'
       })
       expect(r.statusCode).toEqual(401);
       expect(r.body.title).toEqual('Authentication failed')
@@ -65,13 +68,11 @@ describe('POST /login', () => {
     const r = await request(app)
       .post('/login')
       .send({
-        username: 'test',
-        password: 'test' 
+        username: TEST_USERNAME,
+        password: TEST_PASSWORD
       })
     try {
       expect(r.statusCode).toEqual(200);
-      // expect(r.redirect).toEqual(true);
-      // expect(r.header.location).toEqual("/");
     } catch (err) {
       err.message = err.message+ '\n\nCHECK USER/PASSWORD'
       throw err
@@ -102,8 +103,8 @@ describe('GET /is-authenticated', () => {
     const loggedAgent = request.agent(app)
     const a = await loggedAgent.post('/login')
       .send({
-        username: 'test',
-        password: 'test'
+        username: TEST_USERNAME,
+        password: TEST_PASSWORD
       })
     try {
       expect(a.statusCode).toEqual(200);
@@ -122,17 +123,19 @@ describe('GET /is-authenticated', () => {
 
 describe('Authentication', () => {
   it('should allow and deny acess of a user', async () => {
+    // Check if is authenticated
     const r = await request(app)
       .get('/is-authenticated')
     expect(r.statusCode).toBe(302)
     expect(r.redirect).toEqual(true)
     expect(r.header.location).toEqual("/login")
 
+    // Log in
     const loggedAgent = request.agent(app)
     const a = await loggedAgent.post('/login')
       .send({
-        username: 'test',
-        password: 'test'
+        username: TEST_USERNAME,
+        password: TEST_PASSWORD
       })
     try {
       expect(a.statusCode).toEqual(200);
@@ -143,10 +146,12 @@ describe('Authentication', () => {
       throw err
     }
 
+    // Check user auth permission
     const b = await loggedAgent.get('/is-authenticated')
     expect(b.statusCode).toBe(200)
     expect(b.body.message).toEqual("protected");
 
+    // log out
     const c = await loggedAgent.post('/logout')
     expect(c.statusCode).toEqual(302);
     expect(c.redirect).toEqual(true);
