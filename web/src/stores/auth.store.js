@@ -36,7 +36,7 @@ export const useAuthStore = defineStore('auth', {
       } catch (err) {
         // const alertStore = useAlertStore();
         // alertStore.error(error);
-        console.log(err)
+        throw err
       }
     },
     logout() {
