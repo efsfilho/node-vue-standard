@@ -6,6 +6,7 @@ import { join, dirname } from 'node:path'
 import { fileURLToPath } from 'node:url'
 import express from 'express'
 import session from 'express-session'
+import cors from 'cors'
 import passport from 'passport'
 import compression from 'compression'
 import { ensureLoggedIn } from 'connect-ensure-login'
@@ -15,6 +16,12 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 app.use(morganLogger)
 app.use(express.json())
+if (process.env.NODE_ENV === 'development') {
+  app.use(cors({
+    origin: 'http://localhost:9000',
+    credentials: true,
+  }))
+}
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(join(__dirname, 'public')))
 

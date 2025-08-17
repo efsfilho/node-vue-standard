@@ -1,7 +1,7 @@
 import 'dotenv/config'
 
 export const config = {
-  isDebug: process.env.NODE_ENV === 'debug',
+  isDebug: process.env.NODE_ENV === 'development',
   port: process.env.SERVER_PORT || 3000,
   log_location: './log',
   session: {

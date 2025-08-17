@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "main": "./src/app.js",
   "scripts": {
-    "dev": "nodemon ./src/app.js",
+    "dev": "NODE_ENV=development nodemon ./src/app.js",
     "init": "node ./src/scripts/init_database.js && nodemon ./src/app.js",
     "test": "jest"
   },
@@ -11,6 +11,7 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "cors": "^2.8.5",
     "jest": "^30.0.5",
     "supertest": "^7.1.4"
   },

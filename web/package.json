@@ -1,0 +1,37 @@
+{
+  "name": "Quasar Admin",
+  "version": "0.0.1",
+  "description": "Quasar Admin",
+  "productName": "Quasar Admin",
+  "author": "pratikpatelpp802@gmail.com",
+  "private": true,
+  "scripts": {
+    "test": "echo \"No test specified\" && exit 0"
+  },
+  "engines": {
+    "node": "^22.17.1",
+    "npm": ">= 10.9.2",
+    "yarn": ">= 1.21.1"
+  },
+  "dependencies": {
+    "@quasar/extras": "^1.17.0",
+    "@quasar/quasar-ui-qcalendar": "^4.1.2",
+    "@tanstack/vue-query": "^5.85.3",
+    "axios": "^1.11.0",
+    "echarts": "^5.6.0",
+    "pinia": "^3.0.3",
+    "quasar": "^2.18.2",
+    "vue": "^3.5.18",
+    "vue-echarts": "^7.0.3",
+    "vue-i18n": "^11.1.11",
+    "vue-router": "^4.5.1",
+    "vuedraggable": "^2.24.3"
+  },
+  "devDependencies": {
+    "@intlify/vite-plugin-vue-i18n": "^7.0.0",
+    "@quasar/app-vite": "^2.3.0",
+    "autoprefixer": "^10.4.21",
+    "postcss": "^8.5.6",
+    "quasar-app-extension-qhierarchy": "^1.0.15"
+  }
+}
