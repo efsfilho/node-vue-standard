@@ -18,8 +18,10 @@ const myFormat = ({ timestamp, level, message, ms, splat, ...meta }) => {
       const splat = meta[Symbol.for('splat')]
       meta = splat ? splat: ''
     }
-  }  
-  return `${timestamp} ${ms} [${level}] ${message} ${meta}`;
+  }
+  const msg = `${timestamp} ${ms} [${level}] ${message} ${meta}`
+  console.log(msg)
+  return msg
 };
 
 const logger = createLogger({
@@ -34,12 +36,11 @@ const logger = createLogger({
       maxsize: 5000000,
       level: config.isDebug ? 'debug' : 'info',
       format: format.combine(
-        format.timestamp(),
+        format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss.SSSZZ' }),
         format.ms(),
         format.printf(myFormat)
       ),
     }),
   ],
 });
-
 export default logger

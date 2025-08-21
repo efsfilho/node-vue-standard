@@ -26,7 +26,8 @@ morgan.token('user-logged', (req) => {
 })
 
 let morganLogger = morgan(localFormat, { stream: accessLogStream })
-if (config.isDebug) {
+
+if (!config.isProduction) {
   morganLogger = morgan('dev')
 }
 export default morganLogger

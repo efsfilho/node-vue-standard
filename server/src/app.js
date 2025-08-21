@@ -91,5 +91,10 @@ app.use((err, req, res, next) => {
   });
 })
 
-app.listen(config.port, () => console.log(`Server running on port ${config.port}`))
+app.listen(config.port, () => {
+  logger.debug('   DEBUG MODE')
+  logger.debug('isProduction:', config.isProduction)
+  logger.debug('log_location:', config.log_location)
+  logger.info(`Server running on port ${config.port}`)
+})
 

@@ -1,9 +1,12 @@
 import 'dotenv/config'
 
 export const config = {
-  isDebug: process.env.NODE_ENV === 'development',
+  isDebug: process.env.DEBUG !== '',
+  isProduction: process.env.NODE_ENV === 'production',
   port: process.env.SERVER_PORT || 3000,
   log_location: './log',
+
+  // SESSION
   session: {
     secret: process.env.SESSION_SECRET || 'uSHmOckPOryBdEstiNTe'
   },
@@ -14,4 +17,6 @@ export const config = {
     // url: "redis://alice:foobared@awesome.redis.server:6380",
     url: process.env.REDIS_URL,
   }
+  // SESSION
+
 }
