@@ -16,7 +16,10 @@ export const config = {
   redisClient: {
     // url: "redis://alice:foobared@awesome.redis.server:6380",
     url: process.env.REDIS_URL,
-  }
+  },
   // SESSION
 
+  users: {
+    allowWithSameEmail: true
+  }
 }

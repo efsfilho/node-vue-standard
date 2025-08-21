@@ -16,7 +16,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 app.use(morganLogger)
 app.use(express.json())
-if (process.env.NODE_ENV === 'development') {
+if (!config.isProduction) {
   app.use(cors({
     origin: 'http://localhost:9000',
     credentials: true,
@@ -45,6 +45,8 @@ app.use((req, res, next) => {
 
 import authRoutes from './modules/auth/index.js'
 app.use('/',  authRoutes)
+import users from './modules/users/index.js'
+app.use('/users', users)
 
 app.get('/list', async(req, res, next) => {
   res.json({ message: await redisStore.all() })
