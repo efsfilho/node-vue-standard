@@ -5,7 +5,11 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon ./src/app.js",
     "init": "node ./src/scripts/init_database.js && nodemon ./src/app.js",
-    "test": "jest"
+    "test": "NODE_OPTIONS='--experimental-vm-modules' jest"
+  },
+  "jest": {
+    "transform": {
+    }
   },
   "author": "",
   "license": "ISC",

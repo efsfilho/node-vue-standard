@@ -178,26 +178,6 @@ export const deleteUser = async (req, res, next) => {
   }
 }
 
-// export const patchUser = async (req, res, next) => {
-//   try {
-//     const { id } = req.params
-
-//     // Check if user exists
-//     const existingUser = await userService.getUserById(id)
-//     if (!existingUser) {
-//       return res.status(404).json({
-//         detail: 'User not found'
-//       })
-//     }
-
-//     await userService.deleteUser(id)
-//     res.status(204).end()
-//   } catch (err) {
-//     logger.info('Error deleting user:')
-//     next(err)
-//   }
-// }
-
 export const patchUser = async (req, res, next) => {
   try {
     const { id } = req.params

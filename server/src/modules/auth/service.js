@@ -61,6 +61,7 @@ passport.deserializeUser(function(user, cb) {
 export const passportAuthenticate = passport.authenticate('local', {
   failureMessage: true,
   failWithError: true,
+  // passReqToCallback: true
 })
 
 export const saveUser = async (username, password) => {

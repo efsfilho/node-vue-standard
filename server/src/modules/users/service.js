@@ -1,44 +1,6 @@
-// import sqlite3 from 'sqlite3';
-// import { open } from 'sqlite';
 import db from '../../utils/db_sqlite.js'
 import logger from '../../utils/logger.js'
-// import crypto from 'node:crypto'
 import generateHashedPassword from '../../utils/password_hashing.js'
-// Initialize database connection
-// let db;
-
-// async function initializeDatabase() {
-//   db = await open({
-//     filename: './users.db',
-//     driver: sqlite3.Database
-//   });
-
-//   await db.exec(`
-//     CREATE TABLE IF NOT EXISTS users (
-//       id INTEGER PRIMARY KEY AUTOINCREMENT,
-//       name TEXT NOT NULL,
-//       email TEXT UNIQUE NOT NULL,
-//       password TEXT NOT NULL,
-//       createdAt DATETIME DEFAULT CURRENT_TIMESTAMP,
-//       updatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
-//     )
-//   `);
-// }
-
-// initializeDatabase().catch(err => {
-//   logger.error('Database initialization error:', err);
-// });
-
-// User CRUD operations
-// export async function createUser(userData) {
-//   const { name, email, password } = userData;
-
-//   const result = await db.run(
-//     'INSERT INTO users (name, email, password) VALUES (?, ?, ?)',
-//     [name, email, password]
-//   );
-//   return { id: result.lastID, name, email };
-// }
 
 export const createUser = async (userData) => {
   const { username, name, email, password } = userData
@@ -98,7 +60,6 @@ export const getAllUsers = async () => {
         resolve(data.map((e) => ({ ...e, active: !!e.active })))
       }
     }
-    //   return await db.all('SELECT id, name, email, createdAt, updatedAt FROM users')
     const qry = `
       SELECT id, active, username, name, email, updatedAt
       FROM users;
@@ -114,7 +75,11 @@ export async function getUserById(id) {
       if (err) {
         reject(new Error(err))
       } else {
-        resolve({ ...data, active: !!data.active })
+        if (data) {
+          resolve({ ...data, active: !!data.active })
+        } else {
+          resolve([])
+        }
       }
     }
     const qry = `
@@ -127,10 +92,6 @@ export async function getUserById(id) {
 
     db.get(qry, [id], cb)
   })
-  // return await db.get(
-  //   'SELECT id, name, email, createdAt, updatedAt FROM users WHERE id = ?',
-  //   [id]
-  // );
 }
 
 export const updateUser = async (id, userData) => {
@@ -165,12 +126,6 @@ export const updateUser = async (id, userData) => {
     logger.debug('PARAMS:', params)
     db.run(qry, params, cb)
   })
-  // const { name, email, password } = userData;
-  // await db.run(
-  //   'UPDATE users SET name = ?, email = ?, password = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
-  //   [name, email, password, id]
-  // );
-  // return { id, name, email };
 }
 
 export const deleteUser = async (id) => {
@@ -192,8 +147,6 @@ export const deleteUser = async (id) => {
     logger.debug('PARAMS:', id)
     db.run(qry, [id], cb)
   })
-  // await db.run('DELETE FROM users WHERE id = ?', [id]);
-  // return { id };
 }
 
 export const getUserByEmail = async (email) => {
@@ -214,7 +167,6 @@ export const getUserByEmail = async (email) => {
     logger.debug('PARAMS:', email)
     db.get(qry, [email], cb)
   })
-  // return await db.get('SELECT * FROM users WHERE email = ?', [email]);
 }
 
 export const getUserByUsername = async (username) => {
@@ -235,7 +187,6 @@ export const getUserByUsername = async (username) => {
     logger.debug('PARAMS:', username)
     db.get(qry, [username], cb)
   })
-  // return await db.get('SELECT * FROM users WHERE email = ?', [email]);
 }
 
 // Allowed fields for partial update
@@ -260,7 +211,6 @@ export const partialUpdateUser = async (id, updates) => {
       values.push(value)
     }
   }
-
   if (setClauses.length === 0) {
     throw new Error('No valid fields to update')
   }
@@ -273,10 +223,8 @@ export const partialUpdateUser = async (id, updates) => {
         ${setClauses.join(', ')}
     WHERE id = ?
   `
-
   logger.debug('QUERY:', qry)
   logger.debug('PARAMS:', values)
-
   return await new Promise((resolve, reject) => {
     const cb = function(err) {
       if (err) {
