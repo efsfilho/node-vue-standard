@@ -8,7 +8,7 @@ const app_root = process.cwd()
 const accessLogStream = createStream('access.log', {
   size: '10M',
   interval: '1d', // rotate daily
-  path: join(app_root, config.log_location),
+  path: join(app_root, config.logLocation),
 })
 
 let localFormat = ':remote-addr - :remote-user [:date[iso]] ":method :url HTTP/:http-version" :status :res[content-length] - :response-time ms ":referrer" :user-logged ":user-agent"'

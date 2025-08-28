@@ -61,7 +61,7 @@ export const getAllUsers = async () => {
       }
     }
     const qry = `
-      SELECT id, active, username, name, email, updatedAt
+      SELECT id, active, username, name, email, updatedAt, createdAt
       FROM users;
     `
     logger.debug('QUERY:', qry)

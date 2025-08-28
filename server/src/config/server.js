@@ -1,10 +1,11 @@
 import 'dotenv/config'
 
 export const config = {
-  isDebug: process.env.DEBUG !== '',
+  isDebug: process.env.DEBUG,
   isProduction: process.env.NODE_ENV === 'production',
   port: process.env.SERVER_PORT || 3000,
-  log_location: './log',
+  appAddress: process.env.APP_ADDRESS,
+  logLocation: './log',
 
   // SESSION
   session: {

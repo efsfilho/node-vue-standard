@@ -5,7 +5,7 @@ import { config } from '../config/server.js';
 
 // TODO test process.cwd()
 const app_root = process.cwd()
-const log_location = join(app_root, config.log_location)
+const logLocation = join(app_root, config.logLocation)
 
 const myFormat = ({ timestamp, level, message, ms, splat, ...meta }) => {
   if (meta && meta.stack) {
@@ -32,7 +32,7 @@ const logger = createLogger({
   transports: [
     new transports.File({
       filename: 'info.log',
-      dirname: log_location,
+      dirname: logLocation,
       maxsize: 5000000,
       level: config.isDebug ? 'debug' : 'info',
       format: format.combine(

@@ -16,11 +16,15 @@ const __dirname = dirname(fileURLToPath(import.meta.url))
 const app = express()
 app.use(morganLogger)
 app.use(express.json())
-if (!config.isProduction) {
+if (!config.isProduction && config.appAddress) {
   app.use(cors({
-    origin: 'http://localhost:9000',
+    origin: config.appAddress,
     credentials: true,
   }))
+  logger.warn(`\n
+    CORS enabled !!!\n
+    Origin: ${config.appAddress}
+  `)
 }
 app.use(express.urlencoded({ extended: false }))
 app.use(express.static(join(__dirname, 'public')))
@@ -94,9 +98,12 @@ app.use((err, req, res, next) => {
 })
 
 app.listen(config.port, () => {
-  logger.debug('   DEBUG MODE')
+  logger.debug('DEBUG MODE')
+  logger.debug('isDebug:', config.isDebug)
   logger.debug('isProduction:', config.isProduction)
-  logger.debug('log_location:', config.log_location)
+  logger.debug('logLocation:', config.logLocation)
+  logger.debug('appAddress:', config.appAddress)
+  logger.debug('Allow users with same email:', config.users.allowWithSameEmail)
   logger.info(`Server running on port ${config.port}`)
 })
 
