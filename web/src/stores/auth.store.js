@@ -3,9 +3,6 @@ import { fetchWrapper } from 'src/helpers/fetch-wrapper';
 import { useAlertStore } from 'src/stores/alert.store';
 import router from 'src/router';
 
-const baseUrl = `${process.env.MY_API}`;
-
-
 export const useAuthStore = defineStore('auth', {
   state: () => ({
     // initialize state from local storage to enable user to stay logged in
@@ -15,7 +12,7 @@ export const useAuthStore = defineStore('auth', {
   actions: {
     async login(username, password) {
       try {
-        await fetchWrapper.post(`${baseUrl}/login`, {
+        await fetchWrapper.post('/login', {
           username: username, 
           password: password 
         });
