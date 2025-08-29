@@ -55,6 +55,7 @@ import TableActions from 'src/components/tables/TableActions.vue';
 import { useQuery, useQueryClient } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
 import { fetchWrapper } from 'src/helpers/fetch-wrapper';
+import notify from 'src/helpers/notify';
 
 const rows = ref([])
 const filter = ref(null)
@@ -97,7 +98,10 @@ const fetchUsers = async () => {
 const { isFetching, refetch } = useQuery({
   queryKey: ['users'],
   queryFn: fetchUsers,
-  throwOnError: (err) => console.log(err)
+  throwOnError: (err) => {
+    notify('error', err)
+    console.log(err)
+  }
 });
 
 watch(filter, () => {

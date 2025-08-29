@@ -43,8 +43,8 @@
           </q-card-section>
 
           <q-card-actions align="right">
-            <q-btn class="text-capitalize bg-info text-white">Update User Info</q-btn>
-            <q-btn label="Alert" color="primary" @click="show = true" />
+            <q-btn label="Reset Password" disable color="red" @click="show = true" />
+            <q-btn label="Delete" disable color="red" @click="show = true" />
             <q-btn label="Cancel" color="secondary" @click="closeDialog" />
             <q-btn label="Save" color="primary" @click="saveChange" />
           </q-card-actions>
@@ -115,9 +115,10 @@
 </style>
 
 <script setup>
-import { ref, watchEffect } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query'
 import { fetchWrapper } from 'src/helpers/fetch-wrapper'
+import notify from 'src/helpers/notify'
 
 const { userId = 0, open } = defineProps(['userId', 'open'])
 const emit = defineEmits(['close'])
@@ -131,7 +132,7 @@ const closeDialog = () => {
 }
 
 // Load info
-const { isLoading, data , error } = useQuery({
+const userLoaded = useQuery({
   queryKey: ['user', userId],
   queryFn: async () => {
     try {
@@ -144,13 +145,16 @@ const { isLoading, data , error } = useQuery({
       throw new Error(err)
     }
   },
-  throwOnError: (err) => console.log(err)
+  throwOnError: (err) => {
+    notify('error', err)
+    console.log(err)
+    closeDialog()
+  }
 })
 
 watchEffect(async () => {
-  userDetails.value = {...data.value}
+  userDetails.value = {...userLoaded.data.value}
 })
-
 
 // Save info
 const queryClient = useQueryClient();
@@ -165,21 +169,25 @@ const updateMutation = useMutation({
 const mutationOptions = {
   onSuccess: async () => {
     await queryClient.refetchQueries({ queryKey: ['users'] })
+    notify('', userId > 0 ? 'User updated' : 'User saved')
     closeDialog()
   },
-  // onSettled: () => queryClient.invalidateQueries({ queryKey: ['users'] }),
+  onError: (err) => {
+    console.log(err)
+    notify('error', err)
+  },
 }
 
 const saveChange = async () => {
   if (userId > 0) {
-    const baseUser = data.value
+    const baseUser = userLoaded.data.value
     const editedUser = userDetails.value
     let changesToSave = {}
     for await (const key of Object.keys(baseUser)) {
       if (baseUser[key] !== editedUser[key]) {
         Object.assign(changesToSave, { [key]: editedUser[key] })
       }
-    }
+    }    
     updateMutation.mutate(changesToSave, mutationOptions)
   } else {
     // New user
@@ -190,5 +198,10 @@ const saveChange = async () => {
   }
 } 
 
+const isLoading = computed(() => {
+  return userLoaded.isLoading.value
+    || createMutation.isPending.value
+    || updateMutation.isPending.value
+})
 
 </script>

@@ -33,7 +33,6 @@
                 v-model="password"
                 label="Password"
                 lazy-rules
-
               />
 
               <div>
@@ -42,11 +41,6 @@
             </q-form>
           </q-card-section>
 
-          <q-popup-proxy v-if="showError" v-model="showError" transition-show="flip-up" transition-hide="flip-down">
-            <q-banner class="bg-red text-white">
-              {{ errorMessage }}
-            </q-banner>
-          </q-popup-proxy>
         </q-card>
       </q-page>
     </q-page-container>
@@ -54,12 +48,11 @@
 </template>
 
 <script setup>
-import { ref, defineComponent } from 'vue'
+import { ref } from 'vue'
 import { useAuthStore } from 'src/stores/auth.store'
+import notify from 'src/helpers/notify'
 const username = ref('')
 const password = ref('')
-const showError = ref(false)
-const errorMessage = ref('')
 
 const sendAuth = async () => {
   const authStore = useAuthStore();
@@ -67,11 +60,7 @@ const sendAuth = async () => {
     await authStore.login(username.value, password.value);
   } catch (error) {
     console.log(error)
-    showError.value = true
-    setTimeout(() => {
-      showError.value = false
-    }, 1500);
-    errorMessage.value = error
+    notify('error', error)
   }
 }
 </script>
