@@ -33,7 +33,7 @@ const checkPostUserPayload = (req, res, next) => {
       if (fields.length === 1) {
         msg = fields[0]+' invalid'
       } else {
-        msg = 'Fields: '+fields.join(', ')+' are required'
+        msg = 'Fields '+fields.join(', ')+' are required'
       }
 
       res.status(400).json({ detail: msg })

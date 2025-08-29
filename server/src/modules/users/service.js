@@ -78,7 +78,7 @@ export async function getUserById(id) {
         if (data) {
           resolve({ ...data, active: !!data.active })
         } else {
-          resolve([])
+          resolve(data)
         }
       }
     }
