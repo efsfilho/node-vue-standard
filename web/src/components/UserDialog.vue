@@ -5,13 +5,18 @@
       <div class="q-pb-sm col-lg-8 col-md-8 col-xs-12 col-sm-12" >
         <q-card class="no-shadow" bordered>
           <q-card-section class="text-h6">
-            <div class="text-h6">{{ userId > 0 ? 'Edit Profile' : 'New'}}</div>             
+            <div class="text-h6">{{ isEditing ? 'Edit Profile' : 'New'}}</div>             
           </q-card-section>
           <q-card-section class="q-pa-sm">
             <q-list class="row">
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
-                <q-item-section>
-                   <q-toggle v-model="userDetails.active" color="green" label="Active"/>
+              <q-item class="col-lg-12 col-md-3 col-sm-12 col-xs-12">
+                <q-item-section >
+                  <q-select filled v-model="userDetails.role" :options="optionsRole" label="Role" />
+                </q-item-section>
+              </q-item>
+              <q-item class="col-lg-12 col-md-9 col-sm-12 col-xs-12 ">
+                <q-item-section class="items-end">
+                   <q-toggle v-if="isEditing" v-model="userDetails.active" color="green" label="Active"/>
                 </q-item-section>
               </q-item>
               <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
@@ -29,14 +34,19 @@
                   <q-input dense v-model="userDetails.name" label="Name"/>
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+              <q-item class="col-lg-6 col-md-12 col-sm-12 col-xs-12">
                 <q-item-section>
                    <q-checkbox :disable="true" dense v-model="level" label="Label on Right" />
                 </q-item-section>
               </q-item>
-              <q-item class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+              <q-item class="col-lg-12 col-md-4 col-sm-12 col-xs-12">
                 <q-item-section>
                   <q-input autogrow dense disable v-model="userDetails.createdAt" label="Created At"/>
+                </q-item-section>
+              </q-item>
+              <q-item class="col-lg-12 col-md-4 col-sm-12 col-xs-12">
+                <q-item-section>
+                  <q-input autogrow dense disable v-model="userDetails.updatedAt" label="Last Update"/>
                 </q-item-section>
               </q-item>
             </q-list>
@@ -123,14 +133,15 @@ import notify from 'src/helpers/notify'
 const { userId = 0, open } = defineProps(['userId', 'open'])
 const emit = defineEmits(['close'])
 const show = ref(true)
-const userDetails = ref({})
+const optionsRole = ref(['admin', 'manager', 'user'])
+const userDetails = ref({ role: 'user'})
 // const password_dict = ref({})
 const level = ref(false)
 const closeDialog = () => {
   emit('close')
   show.value = false
 }
-
+const isEditing = computed(() => userId > 0)
 // Load info
 const userLoaded = useQuery({
   queryKey: ['user', userId],
@@ -139,7 +150,7 @@ const userLoaded = useQuery({
       if (userId > 0) {
         return await fetchWrapper.get(`/users/${userId}`)
       } else {
-        return {}
+        return userDetails.value
       }
     } catch (err) {
       throw new Error(err)

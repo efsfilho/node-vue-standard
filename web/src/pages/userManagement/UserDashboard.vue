@@ -35,16 +35,26 @@
         <q-inner-loading showing color="primary" label="Please wait..."/>
       </template>
 
-      <template v-slot:body-cell-action="props">
+      <template v-slot:body-cell-active="props">
         <q-td :props="props">
+          <q-icon
+            size="sm"
+            :name="props.value ? 'check_circle_outline' : 'remove_circle_outline' "
+            :color="props.value ? 'green' : 'grey'"
+          />
+        </q-td>
+      </template>
+      
+      <template v-slot:body-cell-action="props">
+        <q-td :props="props" >
           <q-btn icon="edit" size="sm" @click="openDialog(props.key)" flat dense/>
-          <q-btn icon="delete" size="sm" class="q-ml-sm" flat dense/>
+          <!-- <q-btn icon="delete" size="sm" class="q-ml-sm" flat dense/> -->
         </q-td>
       </template>
 
     </q-table>
 
-    <table-actions class="q-mt-lg"></table-actions>
+    <!-- <table-actions class="q-mt-lg"></table-actions> -->
 
   </q-page>
 </template>
@@ -84,10 +94,12 @@ const filterStatus = () => {
 const fetchUsers = async () => {
   try {
     let data = await fetchWrapper.get('/users');
-    if (filter.value !== null) {
-      data = data.filter(e => e.active === filter.value)
+    if (Array.isArray(data)) {
+      if (filter.value !== null) {
+        data = data.filter(e => e.active === filter.value)
+      }
+      rows.value = data ? data : []
     }
-    rows.value = data ? data : []
     return rows.value
   } catch (err) {
     throw new Error(err)
@@ -109,14 +121,14 @@ watch(filter, () => {
 })
 
 const columns = [
-  { name: 'id', required: true, label: 'ID', align: 'left', field: row => row.id, sortable: true },
-  { name: 'active', align: 'left', label: 'Active', field: 'active', sortable: true },
-  { name: 'username', align: 'left', label: 'Username', field: 'username'},
+  { name: 'id', style: 'width: 10px', required: true, label: 'ID', align: 'left', field: row => row.id, sortable: true },
+  { name: 'active', label: 'Active', field: 'active',  sortable: true, classes: 'q-table--col-auto-width' },
+  { name: 'role', align: 'left', label: 'Role', field: 'role', classes: 'q-table--col-auto-width'},
+  { name: 'username', align: 'left', label: 'Username', field: 'username', classes: 'q-table--col-auto-width'},
   { name: 'name', align: 'left', label: 'Name', field: 'name', sortable: true},
-  { name: 'email', align: 'left',label: 'Email', field: 'email',sortable: true },
-  { name: 'createdAt', label: 'Created Date', field: 'createdAt' },
-  { name: 'updatedAt', label: 'Last Update', field: 'updatedAt' },
-  { name: 'action', label: '', field: '' },
+  // { name: 'email', align: 'left',label: 'Email', field: 'email',sortable: true },
+  { name: 'createdAt', align: 'left', label: 'Created Date', field: 'createdAt', classes: 'q-table--col-auto-width'},
+  { name: 'action', label: '', field: '', classes: 'q-table--col-auto-width'},
 ]
 </script>
 

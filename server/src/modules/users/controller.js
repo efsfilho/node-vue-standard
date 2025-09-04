@@ -49,7 +49,7 @@ const checkPostUserPayload = (req, res, next) => {
 
 export const createUser = async (req, res, next) => {
   try {
-    const { username, name, email, password } = req.body
+    const { username, name, email, role, password } = req.body
 
     const existingUser = await userService.getUserByUsername(username)
     if (existingUser) {
@@ -66,7 +66,7 @@ export const createUser = async (req, res, next) => {
       }
     }
 
-    const newUser = await userService.createUser({ username, name, email, password })
+    const newUser = await userService.createUser({ username, name, email, role, password })
     res.status(201).json(newUser)
   } catch (err) {
     logger.info('Error creating user:')

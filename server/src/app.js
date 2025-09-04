@@ -34,6 +34,9 @@ app.use(session({
   resave: false, // don't save session if unmodified
   saveUninitialized: false, // don't create session until something stored
   store: redisStore,
+  cookie: {
+    maxAge: 3600000 * 12 // (3600000 * 12) 12 hour
+  }
 }))
 app.use(passport.authenticate('session'))
 app.use(compression())
@@ -50,7 +53,9 @@ app.use((req, res, next) => {
 import authRoutes from './modules/auth/index.js'
 app.use('/',  authRoutes)
 import users from './modules/users/index.js'
-app.use('/users', users)
+app.use('/users', ensureLoggedIn(), users)
+// import test from './modules/test-route/index.js'
+// app.use('/a', test)
 
 app.get('/list', async(req, res, next) => {
   res.json({ message: await redisStore.all() })

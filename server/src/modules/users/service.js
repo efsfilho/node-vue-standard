@@ -3,7 +3,13 @@ import logger from '../../utils/logger.js'
 import generateHashedPassword from '../../utils/password_hashing.js'
 
 export const createUser = async (userData) => {
-  const { username, name, email, password } = userData
+  const {
+    username,
+    name,
+    email,
+    role = 'user',
+    password
+  } = userData
   const { hash, salt } = generateHashedPassword(password)
   let savedUser = {}
   const qry = `
@@ -11,12 +17,14 @@ export const createUser = async (userData) => {
       username,
       name,
       email,
+      role,
       hashed_password,
       salt
     ) VALUES (
       $user,
       $name,
       $email,
+      $role,
       $hash,
       $salt
     );
@@ -25,6 +33,7 @@ export const createUser = async (userData) => {
     $user: username,
     $name: name,
     $email: email,
+    $role: role,
     $hash: hash,
     $salt: salt
   }
@@ -61,7 +70,15 @@ export const getAllUsers = async () => {
       }
     }
     const qry = `
-      SELECT id, active, username, name, email, updatedAt, createdAt
+      SELECT
+        id,
+        active,
+        username,
+        name,
+        email,
+        role,
+        updatedAt,
+        createdAt
       FROM users;
     `
     logger.debug('QUERY:', qry)
@@ -83,7 +100,15 @@ export async function getUserById(id) {
       }
     }
     const qry = `
-      SELECT id, active, username, name, email, createdAt, updatedAt
+      SELECT 
+        id,
+        active,
+        username,
+        name,
+        email,
+        role,
+        updatedAt,
+        createdAt
       FROM users
       WHERE id = ?;
     `
@@ -190,7 +215,7 @@ export const getUserByUsername = async (username) => {
 }
 
 // Allowed fields for partial update
-export const ALLOWED_FIELDS = ['username', 'name', 'email']
+export const ALLOWED_FIELDS = ['username', 'name', 'email', 'active', 'role']
 
 /**
  * @param {*} id 
