@@ -32,6 +32,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/vue-query';
 import { ref, watch } from 'vue';
 import { fetchWrapper } from 'src/helpers/fetch-wrapper';
+import notify from 'src/helpers/notify';
 
 const rows = ref([])
 const queryClient = useQueryClient()
@@ -39,35 +40,43 @@ const { isLoading, isSuccess, isPending, isError, isFetching, data, error, refet
   queryKey: ['rents'],
   queryFn: async() => {
     try {
-      let data = await fetchWrapper.get('http://localhost:3000/rows');
-      rows.value = data.rows ? data.rows: []
+      let data = await fetchWrapper.get('/a/1')
+      rows.value = data ? data: []
       return rows.value
     } catch (err) {
-      rows.value = []
-      return []
+      throw new Error(err)
     }
   },
-  throwOnError: (err) => console.log(err)
+  throwOnError: (err) => {
+    notify('error', err)
+    console.log(err)
+  }
 }, queryClient);
 
+// postId	1
+// id	1
+// name	"id labore ex et quam laborum"
+// email	"Eliseo@gardner.biz"
+// body	"laudant
 
 const columns = [
   {
     name: 'name',
     required: true,
-    label: 'Dessert (100g serving)',
+    label: 'Id',
     align: 'left',
-    field: row => row.name,
-    format: val => `${val}`,
-    sortable: true
+    field: 'id',
+    // field: row => row.name,
+    // format: val => `${val}`,
+    // sortable: true
   },
-  { name: 'calories', align: 'center', label: 'Calories', field: 'calories', sortable: true },
-  { name: 'fat', label: 'Fat (g)', field: 'fat', sortable: true },
-  { name: 'carbs', label: 'Carbs (g)', field: 'carbs' },
-  { name: 'protein', label: 'Protein (g)', field: 'protein' },
-  { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
-  { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
-  { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
+  // { name: 'postId', align: 'left', label: 'postId', field: 'postId', sortable: true },
+  { name: 'carbs', align: 'left',label: 'email', field: 'email' },
+  { name: 'fat', align: 'left', label: 'name', field: 'name', sortable: true },
+  { name: 'protein', align: 'left',label: 'Protein (g)', field: 'body' },
+  // { name: 'sodium', label: 'Sodium (mg)', field: 'sodium' },
+  // { name: 'calcium', label: 'Calcium (%)', field: 'calcium', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) },
+  // { name: 'iron', label: 'Iron (%)', field: 'iron', sortable: true, sort: (a, b) => parseInt(a, 10) - parseInt(b, 10) }
 ]
 
 // const rows = [

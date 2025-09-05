@@ -23,9 +23,13 @@ const handleResponse = async (res) => {
     // check for error response
     if (!res.ok) {
       const { user, logout } = useAuthStore();
-      if ([401, 403].includes(res.status)) {
-        // auto logout if 401 Unauthorized or 403 Forbidden response returned from api
+      // auto logout if 401 Unauthorized
+      if ([401].includes(res.status)) {
         logout();
+      }
+
+      if (res.status === 403) {
+        return Promise.reject('Access denied!');
       }
       // get error message from body or default to res status
       const error = (data && data.detail) || res.status;
